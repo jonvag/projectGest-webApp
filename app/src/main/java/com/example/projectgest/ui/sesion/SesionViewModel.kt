@@ -9,6 +9,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.viewModelScope
 import com.example.projectgest.ProjectGestApp
 import com.example.projectgest.data.Resultado
+import com.example.projectgest.data.Tema
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +28,7 @@ data class UiSesion(
     val nombre: String? = null,
     val email: String? = null,
     val biometriaActivada: Boolean = false,
+    val tema: Tema = Tema.Sistema,
     /** Mostrar una vez, después del primer login, la oferta de usar huella. */
     val ofrecerBiometria: Boolean = false,
     val ingresando: Boolean = false,
@@ -66,17 +68,19 @@ class SesionViewModel(application: Application) : AndroidViewModel(application) 
         ProcessLifecycleOwner.get().lifecycle.addObserver(observadorProceso)
 
         viewModelScope.launch {
+            val tema = sessionStore.cargarTema()
             val guardada = sessionStore.cargar()
             biometriaPreguntada = guardada?.biometriaPreguntada ?: false
             _ui.update {
                 if (guardada == null) {
-                    it.copy(estado = EstadoSesion.SinSesion())
+                    it.copy(estado = EstadoSesion.SinSesion(), tema = tema)
                 } else {
                     it.copy(
                         estado = if (guardada.biometriaActivada) EstadoSesion.Bloqueada else EstadoSesion.Activa,
                         nombre = guardada.nombre,
                         email = guardada.email,
                         biometriaActivada = guardada.biometriaActivada,
+                        tema = tema,
                     )
                 }
             }
@@ -91,6 +95,7 @@ class SesionViewModel(application: Application) : AndroidViewModel(application) 
                         estado = EstadoSesion.SinSesion("Tu sesión expiró. Vuelve a ingresar."),
                         email = it.email,
                         biometriaActivada = it.biometriaActivada,
+                        tema = it.tema,
                     )
                 }
             }
@@ -151,11 +156,20 @@ class SesionViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { sessionStore.setBiometria(activada) }
     }
 
+    fun setTema(tema: Tema) {
+        _ui.update { it.copy(tema = tema) }
+        viewModelScope.launch { sessionStore.setTema(tema) }
+    }
+
     fun logout() {
         viewModelScope.launch {
             authRepository.logout()
             _ui.update {
-                UiSesion(estado = EstadoSesion.SinSesion(), biometriaActivada = it.biometriaActivada)
+                UiSesion(
+                    estado = EstadoSesion.SinSesion(),
+                    biometriaActivada = it.biometriaActivada,
+                    tema = it.tema,
+                )
             }
         }
     }

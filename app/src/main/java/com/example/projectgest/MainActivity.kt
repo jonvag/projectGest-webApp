@@ -1,11 +1,14 @@
 package com.example.projectgest
 
+import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
@@ -16,10 +19,12 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.projectgest.data.Tema
 import com.example.projectgest.ui.MainScreen
 import com.example.projectgest.ui.components.CargandoPantalla
 import com.example.projectgest.ui.sesion.BloqueoScreen
@@ -46,8 +51,21 @@ class MainActivity : FragmentActivity() {
         val repository = (application as ProjectGestApp).container.repository
 
         setContent {
-            ProjectGestTheme {
-                val ui by sesionViewModel.ui.collectAsStateWithLifecycle()
+            val ui by sesionViewModel.ui.collectAsStateWithLifecycle()
+            val oscuro = when (ui.tema) {
+                Tema.Sistema -> isSystemInDarkTheme()
+                Tema.Claro -> false
+                Tema.Oscuro -> true
+            }
+
+            // Los íconos de la barra de estado siguen al tema de la app, no
+            // al del sistema, para que se lean cuando se fuerza claro/oscuro.
+            LaunchedEffect(oscuro) {
+                val estilo = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) { oscuro }
+                enableEdgeToEdge(statusBarStyle = estilo, navigationBarStyle = estilo)
+            }
+
+            ProjectGestTheme(darkTheme = oscuro) {
 
                 val pantalla = when (ui.estado) {
                     EstadoSesion.Cargando -> Pantalla.Cargando
@@ -75,6 +93,7 @@ class MainActivity : FragmentActivity() {
                                 repository = repository,
                                 sesion = ui,
                                 onCambiarBiometria = sesionViewModel::setBiometria,
+                                onCambiarTema = sesionViewModel::setTema,
                                 onCerrarSesion = sesionViewModel::logout,
                             )
                             AnimatedVisibility(

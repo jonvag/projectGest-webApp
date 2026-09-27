@@ -54,6 +54,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.projectgest.data.Repository
 import com.example.projectgest.data.Suscripcion
+import com.example.projectgest.data.Tema
 import com.example.projectgest.ui.clientes.ClienteDetalleScreen
 import com.example.projectgest.ui.clientes.ClientesScreen
 import com.example.projectgest.ui.cobros.CobrosScreen
@@ -121,6 +122,7 @@ fun MainScreen(
     repository: Repository,
     sesion: UiSesion,
     onCambiarBiometria: (Boolean) -> Unit,
+    onCambiarTema: (Tema) -> Unit,
     onCerrarSesion: () -> Unit,
 ) {
     val navController = rememberNavController()
@@ -241,6 +243,8 @@ fun MainScreen(
                         email = sesion.email,
                         biometriaActivada = sesion.biometriaActivada,
                         onCambiarBiometria = onCambiarBiometria,
+                        tema = sesion.tema,
+                        onCambiarTema = onCambiarTema,
                         onPagos = { navController.navigate(RutaPagos) },
                         onNotificaciones = { navController.navigate(RutaNotificaciones) },
                         onPerfil = { navController.navigate(RutaPerfil) },

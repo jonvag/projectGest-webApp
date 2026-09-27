@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.example.projectgest.ui.components.BotonPrincipal
+import com.example.projectgest.ui.components.FondoAmbiental
 import com.example.projectgest.ui.theme.ProjectGestTheme
 
 @Composable
@@ -64,10 +65,10 @@ fun BloqueoScreen(
     // "Atrás" no debe llegar a la navegación de la app que está debajo.
     BackHandler { activity.moveTaskToBack(true) }
 
+    FondoAmbiental {
     Box(
         Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .systemBarsPadding(),
         contentAlignment = Alignment.Center,
     ) {
@@ -106,5 +107,6 @@ fun BloqueoScreen(
             BotonPrincipal(texto = "Desbloquear", onClick = ::pedir)
             TextButton(onClick = onUsarOtraCuenta) { Text("Usar otra cuenta") }
         }
+    }
     }
 }

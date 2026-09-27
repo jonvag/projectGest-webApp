@@ -20,10 +20,14 @@ import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.Fingerprint
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -41,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import com.example.projectgest.BuildConfig
 import com.example.projectgest.data.EstadoDatos
+import com.example.projectgest.data.Tema
 import com.example.projectgest.ui.components.Avatar
 import com.example.projectgest.ui.components.Tarjeta
 import com.example.projectgest.ui.sesion.biometriaDisponible
@@ -54,6 +59,8 @@ fun MasScreen(
     email: String?,
     biometriaActivada: Boolean,
     onCambiarBiometria: (Boolean) -> Unit,
+    tema: Tema,
+    onCambiarTema: (Tema) -> Unit,
     onPagos: () -> Unit,
     onNotificaciones: () -> Unit,
     onPerfil: () -> Unit,
@@ -97,6 +104,25 @@ fun MasScreen(
             )
             HorizontalDivider(color = ProjectGestTheme.extra.borde)
             ItemMenu(Icons.Outlined.AccountBalance, "Datos bancarios", "Los que ven tus clientes al pagar", onPerfil)
+        }
+
+        Tarjeta(Modifier.fillMaxWidth()) {
+            Row(Modifier.padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Palette, contentDescription = null)
+                Spacer(Modifier.width(14.dp))
+                Text("Apariencia", style = MaterialTheme.typography.bodyLarge)
+            }
+            Spacer(Modifier.height(12.dp))
+            val opciones = listOf(Tema.Sistema to "Sistema", Tema.Claro to "Claro", Tema.Oscuro to "Oscuro")
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                opciones.forEachIndexed { i, (opcion, etiqueta) ->
+                    SegmentedButton(
+                        selected = tema == opcion,
+                        onClick = { onCambiarTema(opcion) },
+                        shape = SegmentedButtonDefaults.itemShape(i, opciones.size),
+                    ) { Text(etiqueta) }
+                }
+            }
         }
 
         Tarjeta(Modifier.fillMaxWidth()) {

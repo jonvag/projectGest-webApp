@@ -18,6 +18,8 @@ import javax.crypto.spec.GCMParameterSpec
 
 private val Context.dataStore by preferencesDataStore(name = "sesion")
 
+enum class Tema { Sistema, Claro, Oscuro }
+
 data class SesionGuardada(
     val token: String,
     val nombre: String?,
@@ -82,7 +84,16 @@ class SessionStore(private val context: Context) {
         }
     }
 
-    /** Borra la sesión pero conserva las preferencias de huella del dispositivo. */
+    suspend fun cargarTema(): Tema =
+        context.dataStore.data.first()[KEY_TEMA]
+            ?.let { guardado -> Tema.entries.find { it.name == guardado } }
+            ?: Tema.Sistema
+
+    suspend fun setTema(tema: Tema) {
+        context.dataStore.edit { it[KEY_TEMA] = tema.name }
+    }
+
+    /** Borra la sesión pero conserva las preferencias del dispositivo (huella, tema). */
     suspend fun borrar() {
         context.dataStore.edit { prefs ->
             prefs.remove(KEY_TOKEN)
@@ -138,5 +149,6 @@ class SessionStore(private val context: Context) {
         val KEY_EMAIL = stringPreferencesKey("email")
         val KEY_BIOMETRIA = booleanPreferencesKey("biometria_activada")
         val KEY_BIOMETRIA_PREGUNTADA = booleanPreferencesKey("biometria_preguntada")
+        val KEY_TEMA = stringPreferencesKey("tema")
     }
 }

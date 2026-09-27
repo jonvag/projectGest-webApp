@@ -1,0 +1,41 @@
+# --- Gradle / builds ---
+.gradle/
+build/
+/captures
+.externalNativeBuild
+.cxx
+.kotlin/
+
+# --- Configuración local (ruta del SDK, URLs de prueba, secretos) ---
+local.properties
+*.env
+.env*
+
+# --- Firma de releases: nunca subir keystores ni sus claves ---
+*.jks
+*.keystore
+keystore.properties
+
+# --- Artefactos generados ---
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+output-metadata.json
+
+# --- Logs y reportes ---
+*.log
+*.hprof
+
+# --- Android Studio / IntelliJ ---
+*.iml
+.idea/*
+# Se versionan solo los ajustes compartibles del proyecto.
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/runConfigurations/
+
+# --- Sistema operativo ---
+.DS_Store
+Thumbs.db
